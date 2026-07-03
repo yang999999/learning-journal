@@ -91,6 +91,7 @@ learning-journal/
 | 🚀 Week1 启动包 | 7天可运行代码脚手架（Hello AI→Prompt→Function Calling→流式对话→手写RAG） | [查看](projects/week1-quickstart/) |
 | 📕 后端面试满分速查 | MySQL/Redis/MQ/分布式/事务/Docker 高频面试题满分答案 | [查看](docs/resources/后端面试满分速查.md) |
 | 🤖 AI Agent面试满分速查 | Transformer/RAG/微调/Agent 面试题+实战项目对应 | [查看](docs/resources/AI-Agent面试满分速查.md) |
+| 📋 每日学习执行指南 | **每天照着做**：学→验→练→记四步，面试满分导向 | [查看](docs/resources/每日学习执行指南.md) |
 | 🎲 面试抽题脚本 | 随机抽题自测，`./scripts/quiz.sh [模块] [数量]` | 见下 |
 
 ## 🛠 工具推荐
