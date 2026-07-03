@@ -1,0 +1,16 @@
+[project]
+name = "week1-quickstart"
+version = "0.1.0"
+description = "Week 1: 从零跑通第一个 LLM 调用 + 迷你 RAG"
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=1.30.0",
+    "python-dotenv>=1.0.0",
+    "rich>=13.7.0",
+]
+
+[project.optional-dependencies]
+rag = [
+    "faiss-cpu>=1.8.0",
+    "sentence-transformers>=3.0.0",
+]

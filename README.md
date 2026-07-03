@@ -62,6 +62,9 @@ learning-journal/
 |------|------|------|
 | 📘 体系化技术知识手册 | 7 大模块（MySQL/MQ/Redis/分布式/事务/Docker/AI Agent）三段式（知识点→原理→面试题） | [查看](docs/notes/2026-07-02-AI-Agent技术知识手册.md) |
 | 🗺️ 五段式学习路线 | 基础地基→LangChain/LangGraph→RAG→微调→Agent工程化，18周计划 | [查看](docs/resources/AI-Agent转型学习路线.md) |
+| 🧠 学习方法论执行手册 | 费曼技巧+项目驱动+刻意练习，避坑指南+每日/每周节奏+资深能力标准 | [查看](docs/resources/学习方法论执行手册.md) |
+| 📊 能力自检矩阵 | 13大类80+能力项，5分制打分，月度追踪成长进度 | [查看](docs/resources/能力自检矩阵.md) |
+| 🚀 Week1 启动包 | 7天可运行代码脚手架（Hello AI→Prompt→Function Calling→流式对话→手写RAG） | [查看](projects/week1-quickstart/) |
 
 ## 🛠 工具推荐
 
