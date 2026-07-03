@@ -41,6 +41,21 @@ learning-journal/
 ./scripts/new-summary.sh yearly    # 年复盘
 ```
 
+### 面试刷题（后端+AI高频题随机抽）
+
+```bash
+./scripts/quiz.sh              # 随机抽5题
+./scripts/quiz.sh mysql 3      # 抽3道MySQL题
+./scripts/quiz.sh rag 5        # 抽5道RAG题
+# 支持模块: mysql/redis/kafka/分布式/事务/Docker/LLM基础/RAG/微调/Agent
+```
+
+### 新建一周学习计划
+
+```bash
+./scripts/new-week.sh 2 "LangGraph深度实践"
+```
+
 ## 📝 笔记规范
 
 - 文件名格式：`YYYY-MM-DD-主题.md`，例如 `2026-07-02-Python异步编程.md`
@@ -74,6 +89,9 @@ learning-journal/
 | 🧠 学习方法论执行手册 | 费曼技巧+项目驱动+刻意练习，避坑指南+每日/每周节奏+资深能力标准 | [查看](docs/resources/学习方法论执行手册.md) |
 | 📊 能力自检矩阵 | 13大类80+能力项，5分制打分，月度追踪成长进度 | [查看](docs/resources/能力自检矩阵.md) |
 | 🚀 Week1 启动包 | 7天可运行代码脚手架（Hello AI→Prompt→Function Calling→流式对话→手写RAG） | [查看](projects/week1-quickstart/) |
+| 📕 后端面试满分速查 | MySQL/Redis/MQ/分布式/事务/Docker 高频面试题满分答案 | [查看](docs/resources/后端面试满分速查.md) |
+| 🤖 AI Agent面试满分速查 | Transformer/RAG/微调/Agent 面试题+实战项目对应 | [查看](docs/resources/AI-Agent面试满分速查.md) |
+| 🎲 面试抽题脚本 | 随机抽题自测，`./scripts/quiz.sh [模块] [数量]` | 见下 |
 
 ## 🛠 工具推荐
 

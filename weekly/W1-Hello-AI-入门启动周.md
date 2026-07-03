@@ -13,48 +13,50 @@ status: in-progress
 
 ---
 
-## 🎯 本周目标（3个，不贪多）
+## 🎯 本周目标（适配要求：后端刷题 + AI实战）
 
-- [x] **G0**：环境配置完成（Python/API Key/依赖安装）
-- [ ] **G1**：跑通 Day1-Day4 脚本（Hello AI → Prompt → Function Calling → 流式对话）
-- [ ] **G2**：跑通 Day5 迷你 RAG，体验"给 AI 喂私有知识"
-- [ ] **G3（加分）**：写第一篇学习笔记，做第一次周复盘
+- [x] **G0**：仓库机制 + 面试速查 + 抽题脚本搭建完成
+- [ ] **G1**：跑通 AI 实战（Hello AI → Prompt → Function Calling → 流式对话 → 手写RAG）
+- [ ] **G2**：刷 8 道后端高频题（MySQL/Redis/Kafka），自我校验
+- [ ] **G3**：写第一篇 AI 笔记 + 第一次周复盘
 
 ---
 
 ## 📓 每日进展
 
 ### 周五 7/3（启动日，1-2h）
-- [ ] 读这份周计划
+- [x] **仓库环境**（已完成）
 - [ ] 进入 `projects/week1-quickstart/`
-- [ ] `pip install openai python-dotenv rich`
+- [ ] `pip install openai python-dotenv rich`（如已装跳过）
 - [ ] 复制 `.env.example` 为 `.env`，填入 API Key
 - [ ] 跑通 `python 01_hello_ai.py`，看到 AI 回答
-- [ ] 成功后告诉我："Day1 跑通了！" → 我给你 Day2 讲解
+- [ ] **后端热身**：运行 `./scripts/quiz.sh mysql 3`，自测3道MySQL题（答完看后端速查手册校对）
+- [ ] 成功后告诉我："Day1 跑通了！"
 
-**今日产出**：AI 在终端里回你一句话 🎉
-**可能遇到的问题**：API Key 填错、网络不通、包安装失败 → 直接把错误信息发给我
+**今日产出**：AI第一跑 + 3道MySQL题自测
+**要点**：后端你日常在用，所以只做面试刷题，不重复实战
 
-### 周六 7/4（核心日，2-3h）
-- [ ] Day2：跑 `02_prompt_playground.py`，观察 Zero-shot/Few-shot/CoT 的差异
-- [ ] 试试修改问题，用你自己的问题测试 CoT 效果
-- [ ] Day3：跑 `03_function_calling.py`，**重点读代码理解 ReAct 循环**
-- [ ] 试着加一个自己的工具（比如"查询当前时间"）
-- [ ] Day4：跑 `04_streaming_chat.py`，体验多轮对话+流式输出
+### 周六 7/4（AI核心实战 + 后端刷题，2-3h）
+- [ ] **AI实战 Day2**：跑 `02_prompt_playground.py`，对比 Zero-shot/Few-shot/CoT 效果
+- [ ] 用你自己的问题测试 CoT，感受 Prompt 对输出的影响
+- [ ] **AI实战 Day3**：跑 `03_function_calling.py`，**重点读代码理解 ReAct 循环**
+- [ ] 试着加一个自己的工具（比如"查询当前时间"/"查询IP"）
+- [ ] **AI实战 Day4**：跑 `04_streaming_chat.py`，体验多轮记忆+打字机流式输出
+- [ ] **后端刷题**：`./scripts/quiz.sh redis 3`，自测3道Redis题校对
 
-**今日产出**：能和自己写的 AI 助手流畅聊天，理解"Agent 就是循环"
-**关键概念**：CoT、Function Calling、ReAct 循环、流式输出
+**今日产出**：手写 ReAct 循环 + 流式聊天机器人 + 3道Redis题
+**里程碑**：理解「Agent 本质 = LLM决策 + 工具执行 + 循环」
 
-### 周日 7/5（RAG 日 + 复盘，2-3h）
-- [ ] Day5-7：跑 `05_mini_rag.py`（需要 openai embedding 权限，用OpenAI/DeepSeek都可）
-- [ ] 试着给 DOCUMENTS 数组里加你自己的文章，问相关问题
-- [ ] **写下第一篇笔记**：用 `./scripts/new-note.sh "Week1总结-我的AI第一周"`
-- [ ] **做第一次周复盘**：用 `./scripts/new-summary.sh weekly`
-- [ ] git commit + push，记录你的第一个里程碑
-- [ ] 回来告诉我"W1 完成了，我的感受是XXX"
+### 周日 7/5（RAG 实战 + 复盘，3h）
+- [ ] **AI实战 Day5**：跑 `05_mini_rag.py`（手写完整RAG）
+- [ ] 给 DOCUMENTS 数组加一篇你自己的文章，问相关问题 → 感受"给AI喂私有知识"
+- [ ] **后端刷题**：`./scripts/quiz.sh kafka 2`，自测2道MQ题
+- [ ] **写第一篇AI笔记**：`./scripts/new-note.sh "Week1总结-我的AI第一周" "week1,入门"`
+- [ ] **第一次周复盘**：`./scripts/new-summary.sh weekly`，对照能力矩阵打第一次分
+- [ ] git commit + push → 告诉我"W1 完成了，我最大的感受是XXX"
 
-**今日产出**：手写 RAG 跑通 + 第一篇笔记 + 第一次复盘
-**里程碑**：🏁 从"想学AI"变成"写过AI代码的人"
+**今日产出**：手写RAG跑通 + 5道MQ题 + 第一篇笔记 + 第一次复盘
+**里程碑**：🏁 从"想学AI"变成"能写AI应用的人"
 
 ---
 
