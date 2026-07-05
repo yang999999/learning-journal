@@ -89,8 +89,8 @@ learning-journal/
 | 🧠 学习方法论执行手册 | 费曼技巧+项目驱动+刻意练习，避坑指南+每日/每周节奏+资深能力标准 | [查看](docs/resources/学习方法论执行手册.md) |
 | 📊 能力自检矩阵 | 13大类80+能力项，5分制打分，月度追踪成长进度 | [查看](docs/resources/能力自检矩阵.md) |
 | 🚀 Week1 启动包 | 7天可运行代码脚手架（Hello AI→Prompt→Function Calling→流式对话→手写RAG） | [查看](projects/week1-quickstart/) |
-| 📚 项目A：企业级 RAG 智能知识库 | 全链路优化+工程化，覆盖 RAG 面试考点 | [查看](projects/project-A-RAG智能知识库.md) |
-| 🤖 项目B：AI 智能运维 Copilot | 多Agent + MCP + HITL，Agent 架构面试全覆盖 | [查看](projects/project-B-AI运维Copilot.md) |
+| 🛒 项目A：直播电商 AI 营销助手 | RAG+工具调用+高并发，贴合商卡/秒杀/竞拍业务 | [查看](projects/project-A-直播电商AI营销助手.md) |
+| 📺 项目B：AI 直播 OnCall 助手 | 多Agent+MCP+HITL，贴合直播监控/告警排障 | [查看](projects/project-B-直播电商OnCall助手.md) |
 | 📕 后端面试满分速查 | MySQL/Redis/MQ/分布式/事务/Docker 高频面试题满分答案 | [查看](docs/resources/后端面试满分速查.md) |
 | 🤖 AI Agent面试满分速查 | Transformer/RAG/微调/Agent 面试题+实战项目对应 | [查看](docs/resources/AI-Agent面试满分速查.md) |
 | 📋 每日学习执行指南 | **每天照着做**：学→验→练→记四步，面试满分导向 | [查看](docs/resources/每日学习执行指南.md) |
