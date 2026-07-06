@@ -249,8 +249,12 @@ status: planned
 ---
 
 
-### Q9：为什么用Go不用Python做AI编排？
-> 答：几个原因：①我们公司后端全部是Go微服务，团队技术栈统一，Python服务部署、运维、监控都要重新搞一套，成本高；②直播电商秒杀场景QPS 5000+，Go的并发模型（goroutine）天然适合高并发，Python GIL+asyncio扛不住这个QPS；③AI编排本身不是复杂Agent多步推理，就是单Agent+Tool Calling，逻辑不复杂，用Go SDK直接调OpenAI/大模型的Function Calling接口完全能做，不需要LangGraph那种重框架；④接入现有商卡/库存/竞拍/召回等微服务全是gRPC，Go调gRPC是原生体验；⑤向量检索走Milvus SDK Go客户端也成熟。LangGraph适合复杂多Agent编排场景，我们这个场景Go自研更轻、更稳定、性能更好。
+### Q9：为什么Go做网关、Python做AI编排？技术栈怎么拆分的？
+> 答：分层设计，各取所长：
+> ①**Go接入层**负责扛高并发——秒杀QPS 5000+，Go的goroutine+Gin性能天然合适，而且公司现有所有业务微服务都是Go，接入层要和它们gRPC通信，用Go最顺；缓存、限流、熔断、降级这些高并发治理能力Go生态成熟。
+> ②**Python AI Agent服务**做智能编排——LangGraph/LangChain的Agent能力、RAG工具链（LlamaIndex、Embedding、rerank）Python生态最完善，快速迭代，不用重复造轮子；AI服务的QPS不用特别高（大部分请求被Go网关缓存挡掉了），Python完全扛得住。
+> ③**通信方式**：Go网关通过gRPC调用Python AI服务；AI服务需要实时业务数据时，反向通过gRPC回调Go业务微服务（商卡/库存/竞拍/召回/用户行为都是Go服务）。两边用Protobuf定义好接口，各自独立部署扩容。
+> ④这种分层是大厂AI落地的标准架构——高并发业务层用Go/Java，AI Agent层用Python，互不干扰，各团队可以独立迭代。
 ---
 
 ## 🚀 你需要做的最小实操
@@ -278,7 +282,7 @@ W6-W7 做 RAG 项目时带你搭这个骨架。
 
 > **直播电商AI智能营销助手** | 后端/AI负责人
 > - 主导设计直播场景AI助手，支持活动规则问答、商卡实时价格查询、竞拍进度查询，覆盖秒杀/满减/竞拍等10+营销玩法
-> - 基于 Go 自研编排层 + BGE-M3 Embedding + Milvus 向量库搭建 RAG 系统，混合检索（BM25+向量+RRF）+ bge-reranker，规则检索Recall@5达90%
+> - Go网关+Python Agent（LangGraph）+ BGE-M3 Embedding + Milvus 向量库搭建RAG系统，混合检索（BM25+向量+RRF）+ bge-reranker，规则检索Recall@5达90%
 > - Function Calling 对接商卡/库存/竞拍等微服务，价格/库存类问题强制工具调用+Guardrail校验，实现零幻觉事故
 > - 多级缓存（精确+语义+本地）+ 模型路由 + K8s弹性扩缩，支撑秒杀峰值5000 QPS，P99<1.5s
 > - 上线后客服咨询量下降40%，首响时间从30s降至3s，问题解决率85%
