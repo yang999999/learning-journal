@@ -270,7 +270,22 @@ while 没结束:
 > 没有标准答案，要实验：通常256-1024token，overlap 10-20%；问答场景小一点（256-512），摘要场景大一点（1024）；父子文档策略避免选择困难。看Recall@K指标调整。
 
 **Q5：Function Calling和MCP什么关系？**
-> Function Calling是LLM的**能力**（生成工具调用JSON）；MCP是**工具协议**（怎么定义工具、怎么连接工具Server的标准）。MCP Server对外暴露Tools/Resources/Prompts，LLM通过Function Calling去调用MCP提供的工具。
+> Function Calling是LLM的**能力**（生成工具调用JSON）；MCP是**工具接入协议**（怎么定义工具、怎么连接工具Server的标准）。MCP Server对外暴露Tools/Resources/Prompts，LLM通过Function Calling去调用MCP提供的工具。两者不是一层东西，不能互相替代：
+> - Function Calling = 手机"能打电话"的能力（模型本身的API特性）
+> - MCP = USB-C接口标准（所有手机/所有Agent都能用统一方式接工具）
+> - 类比：Function Calling是"嘴"（会说话表达要做什么），MCP是"手的接口标准"（用标准方式操作外部工具）
+
+**Q5.1：什么场景用MCP，什么场景直接注册工具？**
+> - 工具少（3-5个）、只给自己的Agent用：直接@tool装饰器注册（项目A的做法），10行代码搞定，MCP是过度设计
+> - 工具多、来自不同系统（Prometheus/Loki/Jaeger/CMDB）、要给多个Agent/多个客户端复用：用MCP，每个系统封装一个MCP Server，Agent零代码接入，长期受益（项目B的做法）
+> - 选型核心：看工具有没有跨系统/跨Agent复用需求。N个工具 × M个客户端 = N×M份适配代码，MCP把它降为N+M。
+
+**Q5.2：Skill和给模型注册工具是一个东西吗？**
+> 完全不是：
+> - 注册工具（Function Calling/MCP Tools）：是给**大模型**看的，告诉LLM"你能调用哪些外部功能"，每次调用模型API时作为tools参数传入
+> - Skill（Codex Skill）：是给**Agent助手本身**看的行为规范（SKILL.md），告诉AI助手"你回复用户时要遵守什么规则"（比如"任务被打断必须报告""长输出要截断"），在框架层加载，不传给大模型
+>
+> 简单说：工具是给模型"用"的（扩展能力边界），Skill是给助手"守规矩"的（约束自身行为）。
 
 **Q6：如果LLM生成了错误的工具参数怎么办？**
 > ①参数校验（Pydantic/Schema校验失败直接返回错误给LLM，让它重生成）；②工具描述更清晰，加例子（Few-shot）；③最多重试3次还错就兜底转人工。
