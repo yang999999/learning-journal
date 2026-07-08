@@ -84,6 +84,53 @@ k是常数（默认60）
 ```
 只看排名不看原始分数，避开两种算法量纲不同问题，不用调权重，简单稳定效果好。工业界标准做法。
 
+### 5.5 RAG 工程实现细节（切片/Embedding/Milvus 入参出参）
+
+**离线建库流程：文档 → 切片 → Embedding → Milvus**
+
+1. **切片（Chunking）**：用 `RecursiveCharacterTextSplitter`（LangChain）
+   - 入参：原始文档字符串
+   - 出参：`List[Document]`，每个Document含 `page_content`（切片文本）+ `metadata`（来源/类型/版本）
+   - 关键参数：`chunk_size=512`、`chunk_overlap=50`（10%重叠）、`separators` 按段落→换行→句号优先级切
+   - metadata 一定要带source文件名，后续检索回答要能标引用来源
+
+2. **Embedding（向量化）**：用 BAAI/bge-m3（中文开源最强）
+   - 入参：单条文本字符串（query）或文本列表（批量documents）
+   - 出参：`List[float]`（1024维归一化向量）或 `List[List[float]]`（批量）
+   - 注意：必须开启 `normalize_embeddings=True`，这样余弦相似度和点积等价
+
+3. **存入Milvus**：
+   - 先建Collection（类似表），字段包含：`id`(INT64自增主键)、`vector`(FLOAT_VECTOR dim=1024)、`content`(VARCHAR存原文)、`source`/`doc_type`(metadata标量字段)
+   - 向量字段建 `IVF_FLAT` 索引，`metric_type=COSINE`，`nlist=1024`（百万级向量）
+   - 入参：批量entities = [向量列表, content列表, source列表, doc_type列表]，批量插入（batch_size=100）
+   - ⚠️ **chunk原文必须存在向量库里**（或主键关联到关系库），否则检索出来只有id和相似度，没法给LLM看
+
+**在线检索流程：用户问题 → 向量化 → Milvus搜索 → （Rerank）→ 拼Prompt**
+
+4. **用户问题Embedding**：和离线完全一样的模型，`embedding_model.embed_query(user_query)` → 1024维向量
+5. **Milvus搜索**（`collection.search`）：
+   - 入参：
+     - `data=[query_vector]`：query向量列表
+     - `anns_field="vector"`：向量字段名
+     - `param={"metric_type":"COSINE","params":{"nprobe":32}}`：nprobe越大越准越慢
+     - `limit=20`：粗排返回Top20
+     - `output_fields=["content","source"]`：**必须带content字段**，否则只有id没用
+     - `expr="doc_type=='seckill'"`：可选标量过滤（类似WHERE）
+   - 出参：`List[Hit]`，每个Hit有 `hit.score`（相似度）、`hit.entity.get('content')`（原文）、`hit.entity.get('source')`（来源）、`hit.id`（主键）
+6. **Rerank（可选）**：bge-reranker-v2-m3对(Query, Chunk)对打分，重排序后取Top3-5
+7. **拼Prompt**：把Top3的[source+content]拼成上下文，塞进System Prompt给大模型生成回答
+
+**关键参数经验值**：
+| 参数 | 推荐值 | 说明 |
+|---|---|---|
+| chunk_size | 512token | 问答场景；摘要可1024 |
+| chunk_overlap | 10%（50token） | 避免在关键信息中间切断 |
+| nlist | 1024（百万级） | 经验公式：4*sqrt(总向量数) |
+| nprobe | 32 | 精度vs速度平衡，越大越准越慢 |
+| 粗排Top-K | 20 | 召回要宽一点 |
+| 精排Top-N | 3-5 | 给LLM的上下文不要太多防"Lost in the Middle" |
+| metric_type | COSINE | 归一化后等价于IP，语义相似度直观 |
+
 ### 6. Rerank（精排）
 - **为什么需要Rerank？** 向量/BM25召回Top20是粗排（快），但粗排分数不准确，需要用更精准的模型重新排序，取Top3-5给LLM，减少噪声提升准确率
 - **Bi-Encoder vs Cross-Encoder**：

@@ -10,9 +10,9 @@
 | 后端MySQL | Q1 B+Tree 为什么用 | ✅ |
 | 后端MySQL | Q2 聚簇索引/回表/覆盖索引/索引下推 | ✅ |
 | 后端MySQL | Q3 MVCC / RC vs RR / 快照读当前读 | ✅ |
-| 后端MySQL | Q4 事务隔离级别 + 锁机制 | ⏳ 今天学 |
-| 后端MySQL | Q5 Redo/Undo/Binlog区别 + 两阶段提交 | ⏳ 今天学 |
-| 后端MySQL | Q6 慢SQL排查优化 | ❌ |
+| 后端MySQL | Q4 事务隔离级别 + 锁机制 + RC降级 | ✅ |
+| 后端MySQL | Q5 Redo/Undo/Binlog区别 + 两阶段提交7步流程 | ✅ |
+| 后端MySQL | Q6 慢SQL排查优化（EXPLAIN详细字段） | ✅ |
 | 后端MySQL | Q7 SQL执行全链路 | ❌ |
 | 后端MySQL | Q8 联合索引设计/最左前缀 | ❌ |
 | 后端MySQL | Q9 缓存数据库一致性 | ❌ |
@@ -21,16 +21,15 @@
 | 后端Redis | Q3 分布式锁怎么实现 | ❌ |
 | AI基础 | Prompt/Token/Temperature三个概念 | ✅ |
 | AI基础 | Self-Attention 原理 + KV Cache | ❌ |
-| AI基础 | RAG完整链路 | ❌ |
-| AI基础 | Function Calling + ReAct | ❌ |
+| AI基础 | RAG完整链路（已在文档整理） | ✅ |
+| AI基础 | Function Calling + ReAct + 三层防幻觉 + 并行调用 | ✅ |
 | AI基础 | 微调 LoRA/QLoRA | ❌ |
-| 项目 | 项目A架构分层 + 深度细节（RRF/正则兜底/关键词维护） | ✅ 7/6-7/7完成 |
+| 项目 | 项目A架构分层+13个面试追问Q&A（RRF/三层防幻觉/关键词热更新/评估） | ✅ 7/8完成 |
 | 项目 | 项目B直播电商OnCall框架 | ❌ |
 
 ### 📌 今天（2026-07-08）目标
-1. 后端MySQL Q4：事务隔离级别（4个级别+怎么选+锁机制+Next-Key Lock）
-2. 后端MySQL Q5：Redo/Undo/Binlog区别+两阶段提交
-3. AI基础：Function Calling + ReAct循环（就是我们项目A里用的那个）
+1. 项目A剩余亮点过一遍（混合检索/多级缓存/个性化/Text-to-API/降级）
+2. 开始项目B：直播电商OnCall助手框架（多Agent协作）
 
 ---
 
