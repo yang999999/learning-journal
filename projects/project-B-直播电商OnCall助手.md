@@ -132,3 +132,193 @@ status: planned
 
 W10-W12 学多 Agent 的时候再完整搭骨架，现在只要把架构和亮点理清楚。
 
+
+---
+
+## 🔬 Supervisor-Worker 多Agent 详细设计（面试展开）
+
+### 为什么不用单Agent？
+单Agent ReAct循环只能串行：查指标→查日志→查变更→查CMDB，每步等上一步结果，总延迟是四个操作相加。多Agent并行：指标Worker、日志Worker、变更Worker、CMDB Worker同时拉数据，Supervisor等所有结果回来后汇总推理，总延迟等于最慢的那个Worker，快很多。
+
+### LangGraph 状态机设计（黑板模式）
+
+所有Agent共享一个State对象（类似黑板），每个Agent往上面写自己的发现，Supervisor最后汇总。
+
+```python
+from typing import TypedDict, Annotated, Sequence
+from langgraph.graph import StateGraph, END
+
+class OnCallState(TypedDict):
+    # 输入
+    alert_id: str
+    alert_message: str
+    
+    # 各Worker的结果（并行写入）
+    metrics_result: dict | None        # Prometheus Worker写
+    logs_result: dict | None          # Loki Worker写
+    changes_result: dict | None       # 发布系统Worker写
+    cmdb_result: dict | None          # CMDB Worker写
+    similar_cases: list[dict] | None  # 历史案例RAG Worker写
+    
+    # 汇总结果
+    root_cause_summary: str | None     # 报告Agent写
+    suggested_actions: list[str]       # 报告Agent写
+    
+    # HITL相关
+    pending_approval: bool            # 是否等待人工审批
+    approval_result: str | None        # approve/reject
+    human_feedback: str | None
+```
+
+### 节点定义（每个Agent是一个节点）
+
+```python
+# Supervisor节点：意图分类+路由
+def supervisor_node(state: OnCallState) -> str:
+    # 根据alert类型路由到不同Worker组合
+    if "延迟高" in state["alert_message"]:
+        return "parallel_investigation"  # 并行拉指标+日志+变更
+    elif "错误率" in state["alert_message"]:
+        return "parallel_investigation"
+    else:
+        return "direct_to_report"  # 简单告警直接生成报告
+
+# Worker节点：查Prometheus指标
+def metrics_worker(state: OnCallState) -> OnCallState:
+    # 通过MCP调用Prometheus Server
+    metrics = mcp_client.call_tool("query_metrics", {
+        "query": "order_api_p99",
+        "time_range": "last_1h"
+    })
+    state["metrics_result"] = metrics
+    return state
+
+# Worker节点：查Loki日志
+def logs_worker(state: OnCallState) -> OnCallState:
+    logs = mcp_client.call_tool("query_logs", {
+        "service": "order_api",
+        "keyword": "timeout"
+    })
+    state["logs_result"] = logs
+    return state
+
+# 类似定义changes_worker/cmdb_worker/similar_cases_worker...
+
+# 报告Agent：汇总所有结果生成根因报告
+def report_agent(state: OnCallState) -> OnCallState:
+    # 把所有Worker结果拼成上下文
+    context = f"""
+    【Prometheus指标】{state['metrics_result']}
+    【Loki日志】{state['logs_result']}
+    【近期变更】{state['changes_result']}
+    【CMDB信息】{state['cmdb_result']}
+    【相似历史故障】{state['similar_cases']}
+    """
+    
+    # 调大模型生成报告
+    summary = llm.generate(f"根据以下信息分析根因：{context}")
+    state["root_cause_summary"] = summary
+    return state
+```
+
+### HITL人工审批节点（高危操作必须人点）
+
+```python
+def hitl_approval_node(state: OnCallState) -> OnCallState:
+    # 判断是否需要人工审批（比如要执行重启命令）
+    if "需要重启" in state.get("suggested_actions", []):
+        state["pending_approval"] = True
+        # ★关键：中断执行，把状态持久化到Checkpointer
+        # LangGraph会自动保存，等待人工审批后恢复
+        return state  # 返回后LangGraph中断，等resume
+    return state
+
+# 人工审批后的恢复节点
+def resume_after_approval(state: OnCallState) -> OnCallState:
+    if state["approval_result"] == "approve":
+        # 执行高危操作
+        execute_command(state["suggested_actions"])
+    else:
+        # 人工拒绝，记录原因
+        log("human rejected", state["human_feedback"])
+    return state
+```
+
+### 边定义（条件路由）
+
+```python
+# 建图
+graph = StateGraph(OnCallState)
+
+# 添加节点
+graph.add_node("supervisor", supervisor_node)
+graph.add_node("metrics_worker", metrics_worker)
+graph.add_node("logs_worker", logs_worker)
+# ... 其他Worker节点
+graph.add_node("report_agent", report_agent)
+graph.add_node("hitl_approval", hitl_approval_node)
+graph.add_node("resume", resume_after_approval)
+
+# 定义边（路由逻辑）
+graph.set_entry_point("supervisor")
+graph.add_conditional_edges(
+    "supervisor",
+    {
+        "parallel_investigation": "parallel_investigation",
+        "direct_to_report": "report_agent"
+    }
+)
+
+# 并行拉数据：多个Worker同时执行（Fan-out）
+graph.add_edge("metrics_worker", "report_agent")
+graph.add_edge("logs_worker", "report_agent")
+# ... 其他Worker都连到report_agent（Fan-in）
+
+# 报告生成后判断是否需要HITL
+graph.add_conditional_edges(
+    "report_agent",
+    lambda s: "hitl" if s.get("pending_approval") else "end",
+    {
+        "hitl": "hitl_approval",
+        "end": END
+    }
+)
+
+# HITL审批后恢复
+graph.add_edge("hitl_approval", "resume")
+graph.add_edge("resume", END)
+```
+
+### Checkpointer持久化（支持中断/恢复）
+
+```python
+from langgraph.checkpoint.sqlite import SqliteSaver
+
+# SQLite持久化状态（生产用PostgreSQL）
+saver = SqliteSaver.from_conn_string(":memory:")
+
+# 编译图时传入checkpointer
+app = graph.compile(checkpointer=saver)
+
+# 运行时指定thread_id（每个告警一个thread_id，隔离状态）
+config = {"configurable": {"thread_id": "alert_12345"}}
+
+# 运行到HITL节点会自动中断
+result = app.invoke(initial_state, config)
+
+# 人工审批后恢复（不用从头跑，从HITL节点继续）
+state = app.get_state(config)
+state.update({"approval_result": "approve", "human_feedback": "同意重启"})
+result = app.invoke(None, config)  # None表示从当前状态继续
+```
+
+### 面试讲法（关键点）
+
+> **为什么用Supervisor不用Swarm？** Swarm是平等对话，适合多个专家平级讨论（比如写论文）；OnCall场景需要一个集中做汇总路由和权限管控，Supervisor更简单可控。
+>
+> **多Agent怎么通信？** 用黑板模式（共享State），每个Worker写结果到State，Supervisor读State汇总，不用消息队列。
+>
+> **HITL怎么实现？** LangGraph的interrupt机制，节点返回后如果pending_approval=True就中断，Checkpointer自动保存状态。人工审批后调用app.invoke(None, config)从当前状态继续，不用从头跑。
+>
+> **并行怎么保证不冲突？** Worker只写自己负责的字段（metrics_worker只写metrics_result），不覆盖别人的字段，天然无冲突。如果多个Worker写同一个字段，可以用列表append。
+
