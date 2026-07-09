@@ -280,7 +280,38 @@ while 没结束:
 > - 工具多、来自不同系统（Prometheus/Loki/Jaeger/CMDB）、要给多个Agent/多个客户端复用：用MCP，每个系统封装一个MCP Server，Agent零代码接入，长期受益（项目B的做法）
 > - 选型核心：看工具有没有跨系统/跨Agent复用需求。N个工具 × M个客户端 = N×M份适配代码，MCP把它降为N+M。
 
-**Q5.2：Skill和给模型注册工具是一个东西吗？**
+**Q5.2：MCP是下游Server实现还是模型tools层实现？**
+> MCP是Client-Server协议，两边都有角色：
+> - **MCP Server（下游系统方实现）**：把自己系统的能力封装成标准工具，对外提供list_tools/call_tool接口，真正执行业务逻辑（比如Prometheus MCP Server、Loki MCP Server）
+> - **MCP Client（Agent平台实现）**：①启动时连接所有MCP Server，调用list_tools()拉取工具列表，自动转换成OpenAI Function Calling格式；②模型输出tool_call后，根据工具名路由到对应MCP Server，用call_tool()发请求执行；③拿到结果塞回messages继续循环
+> - **大模型本身**：完全不知道MCP存在！模型看到的永远是统一的OpenAI格式tools数组，输出格式也永远一致。MCP Client负责"翻译"和"路由"，对模型完全透明。
+>
+> 类比：MCP = USB-C，MCP Server = USB-C设备（U盘/显示器），MCP Client = 电脑上的USB-C控制器，大模型 = 使用设备的软件（Word只认磁盘，不知道USB-C是什么协议）。
+
+**Q5.3：下游实现MCP后，上游还要注册tools给模型吗？**
+> 必须传tools给模型（模型不知道有哪些工具就没法调用），但**不用手写JSON Schema了**。
+>
+> 流程是：
+> 1. Agent启动时读配置文件，连接所有MCP Server地址
+> 2. 对每个Server调用list_tools()拿到工具列表
+> 3. Client自动转换成OpenAI格式，合并本地@tool和所有MCP工具，缓存为统一的openai_tools数组
+> 4. 每次调用大模型都带着这个tools数组（和本地工具完全一样）
+> 5. 模型输出tool_call后，Client根据工具名路由：本地工具→直接调用Python函数；MCP工具→通过call_tool()发JSON-RPC请求给对应Server执行
+>
+> 新增一个工具？不用改Agent代码，只需要在配置里加一行MCP Server地址，启动时自动发现。工具维护责任从Agent开发者转移到工具所有者（下游团队）。
+>
+> ```
+> # 不用MCP：每个工具都要手写函数+装饰器，新工具改Agent代码
+> @tool
+> def query_metrics(query: str): ...
+>
+> # 用MCP：只配地址，自动发现工具
+> mcp_servers:
+>   - http://prometheus-mcp:8000
+>   - http://loki-mcp:8000
+> ```
+
+**Q5.4：Skill和给模型注册工具是一个东西吗？**
 > 完全不是：
 > - 注册工具（Function Calling/MCP Tools）：是给**大模型**看的，告诉LLM"你能调用哪些外部功能"，每次调用模型API时作为tools参数传入
 > - Skill（Codex Skill）：是给**Agent助手本身**看的行为规范（SKILL.md），告诉AI助手"你回复用户时要遵守什么规则"（比如"任务被打断必须报告""长输出要截断"），在框架层加载，不传给大模型
