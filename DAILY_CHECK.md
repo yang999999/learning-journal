@@ -20,7 +20,7 @@
 | AI基础 | RAG完整链路（切片/BGE-M3/Milvus入参出参/RRF/rerank） | ✅ |
 | AI基础 | Function Calling + ReAct + 三层防幻觉 + 并行调用 | ✅ |
 | AI基础 | MCP（Client/Server、和@tool区别、USB-C类比、模型视角） | ✅ |
-| AI基础 | Self-Attention 手算例子（点积/Softmax/加权） | ❌ 讲了一半断在点积 |
+| AI基础 | Self-Attention全家桶（点积/Softmax/加权/Multi-Head/KV Cache/GQA/RoPE） | ✅ 7/23完成 |
 
 ## 📌 待继续（按顺序）
 | 分类 | 内容 | 状态 |

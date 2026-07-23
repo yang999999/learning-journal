@@ -64,25 +64,42 @@ status: active
 
 ### 追问必背（100%会问）
 
-**Q：KV Cache 是什么？为什么能加速推理？节省了什么？**
-> 自回归生成是一步生成一个token，老算法每生成一个新token，就要把**之前所有输入+已经生成的token都重新算一遍Q/K/V**，计算量是O(n²)，n越长越慢，重复计算很多。
->
-> KV Cache解决这个：第一次生成完，把**所有token算好的K和V缓存起来**，以后每生成一个新token，只需要算这个新词的Q/K/V，然后Q和缓存好的老K做注意力，不用重算老的。这样计算量从O(n²)降到O(n)，每次只算一个新词，推理速度快很多，token消耗也少很多，显存占用也优化了。
->
-> 为什么上下文越长越贵？每个token都要存一组K和V到KV Cache，长度从4k到16k，KV Cache显存占用翻四倍；注意力计算复杂度是O(n²)，长度翻倍计算量翻十六倍，所以越长越贵越慢。这就是为什么对话太长会超限——KV Cache占满了token预算和显存。
+**1. 完整 Self-Attention 计算流程（手算级别）**
+以3个词d=2为例：
+1. 输入 X 乘 W_Q/W_K/W_V 三个可学习矩阵，得到 Q/K/V 向量
+2. 点积：score(i,j) = Q_i · K_j（相似度，Q是"我找什么"，K是"我有什么"）
+3. 缩放：除以 √d_k，防止维度大点积过大Softmax饱和梯度消失
+4. Softmax：每行 exp/Σexp，归一化成权重 α（每行和=1）
+5. 加权求和：O_i = Σ_j α_ij · V_j，每个词的输出是所有词V的加权平均，权重视相关性
 
-**Q：位置编码有几种？为什么要位置编码？Transformer 本身不识别顺序。RoPE 为什么流行？**
-> 为什么要：Transformer是并行处理所有token，不象RNN有天然的顺序，所以必须加位置编码告诉模型每个词的位置信息。
-> - 正余弦位置编码（Transformer原始论文）：用sin/cin给不同位置编码，外推性还行，不需要训练
-> - 可学习位置编码：训练出来，适合长度固定的场景（比如BERT），长文本外推差
-> - **RoPE（旋转位置编码）**：通过旋转Q/K矩阵引入相对位置信息，支持长文本外推，不用额外训练，现在主流模型（GPT/LLaMA/Qwen）全用它。
+**2. 为什么多头（Multi-Head）？**
+- 类比多路召回：单头只能学一种相似关系，分头并行学不同子空间（语法/语义/位置）
+- h个头，每头 d_k = d_model/h，总计算量和单头相同
+- 每个头独立有自己的 W_Q/W_K/W_V，算完 Concat 再乘 W_O 融合
+- 工程上一次大矩阵乘法并行完成，不增延迟
 
-**Q：MHA/MQA/GQA 区别？分别用在什么场景？**
-> - **MHA（Multi-Head Attention）**：每个Head都有独立的K和V缓存，精度最好，但是KV Cache占用最大，推理最慢，小模型/短上下文用
-> - **MQA（Multi-Query Attention）**：所有Head共享同一组K和V缓存，KV Cache占用少，推理快，但是精度略有下降
-> - **GQA（Grouped-Query Attention）**：分组共享，一组Head共享一组KV，平衡精度和速度，现在主流大模型（LLaMA 2/3）都用这个，兼顾效果和推理速度。
+**3. KV Cache（推理加速核心，必问）**
+- **问题**：自回归生成第t个token时，前t-1个token的K/V重复计算
+- **解法**：历史token的K/V是不变的（因为输入已定），prefill阶段把所有prompt的K/V算好缓存，decode阶段每步只算新token的K/V并append
+- **加速效果**：单步decode从O(n²)→O(n)，整体O(n³)→O(n²)
+- **显存代价**：KV_cache = 2×n_layers×n_kv_heads×d_head×seq_len×batch×2字节
+  例：Llama2-7B seq=4096 batch=1 ≈ 2GB；batch=32 ≈ 64GB，是显存主要瓶颈
 
----
+**4. MHA vs MQA vs GQA（省显存设计）**
+| 模式 | Q头 | KV头 | 代表 | KV显存 | 效果 |
+|---|---|---|---|---|---|
+| MHA | h | h | BERT/GPT-3 | 1x | 最好 |
+| MQA | h | 1 | PaLM | 1/h 最省 | 掉点明显 |
+| GQA | h | h/k 分组 | **Llama2-70B(32Q/8KV)**、Qwen、Mistral | 1/k 折中 | **几乎不掉点** ✅ |
+- GQA是当前大模型推理优化主流：KV Cache显存降k倍，吞吐提升2-3倍，效果损失极小
+
+**5. RoPE旋转位置编码**
+- 老办法（BERT/GPT-2）：可学习绝对位置embedding，不能外推长度
+- RoPE：对Q/K每两维看成2D点，按位置m旋转θ角，旋转后点积只依赖**相对位置差**
+- 优势：天然相对位置感知 + 支持长度外推（NTK/YaRN插值，4K训的模型扩到128K）
+- 主流模型（Llama/Qwen/Mistral）全用RoPE
+
+**面试金句**："Transformer推理成本大头是KV Cache显存，所以现代模型普遍用GQA省KV Cache，RoPE支持长上下文外推，推理框架如vLLM用PagedAttention解决KV显存碎片问题。"
 
 ### Q2：RAG 完整链路说一遍？每个环节怎么做优化？
 **满分答案框架（按顺序说，有结构）**：
