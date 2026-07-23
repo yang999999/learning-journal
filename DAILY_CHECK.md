@@ -1,39 +1,39 @@
 # 📝 每日进度核对
 
-> 每天开始学习前问一遍：现在学到哪里了，进度对不对，有没有偏航。
+> 每天开始学习前必须先问："现在学到哪里了？进度对不对？" 对齐再继续。
 
-## 🎯 当前核心阶段：W1 第一周（快速启动）
+## 🎯 核心目标
+面向 AI Agent 开发面试满分。后端（Go）+ AI基础 + 一个整合项目《直播电商智能助手》。
 
-### 已完成 ✅
+## ✅ 已完成
 | 分类 | 内容 | 完成 |
-|------|------|--------|
-| 后端MySQL | Q1 B+Tree 为什么用 | ✅ |
-| 后端MySQL | Q2 聚簇索引/回表/覆盖索引/索引下推 | ✅ |
+|------|------|------|
+| 项目 | 项目整合：直播电商智能助手（OnCall+C端一体化架构、9大亮点、8道Q&A） | ✅ 7/23 |
+| 后端MySQL | Q1 B+Tree索引为什么 | ✅ |
+| 后端MySQL | Q2 聚簇/回表/覆盖/索引下推 | ✅ |
 | 后端MySQL | Q3 MVCC / RC vs RR / 快照读当前读 | ✅ |
-| 后端MySQL | Q4 事务隔离级别 + 锁机制 + RC降级 | ✅ |
-| 后端MySQL | Q5 Redo/Undo/Binlog区别 + 两阶段提交7步流程 | ✅ |
-| 后端MySQL | Q6 慢SQL排查优化（EXPLAIN详细字段） | ✅ |
-| 后端MySQL | Q7 SQL执行全链路 | ❌ |
-| 后端MySQL | Q8 联合索引设计/最左前缀 | ❌ |
-| 后端MySQL | Q9 缓存数据库一致性 | ❌ |
-| 后端Redis | Q1 为什么这么快 | ❌ |
-| 后端Redis | Q2 缓存雪崩/缓存穿透/缓存击穿 | ❌ |
-| 后端Redis | Q3 分布式锁怎么实现 | ❌ |
-| AI基础 | Prompt/Token/Temperature三个概念 | ✅ |
-| AI基础 | Self-Attention 原理 + KV Cache | ❌ |
-| AI基础 | RAG完整链路（已在文档整理） | ✅ |
+| 后端MySQL | Q4 隔离级别+锁（行/间隙/Next-Key）+ RC降级 | ✅ |
+| 后端MySQL | Q5 Redo/Undo/Binlog+两阶段提交7步 | ✅ |
+| 后端MySQL | Q6 慢SQL排查（EXPLAIN全字段/临时表/GROUP BY） | ✅ |
+| 后端MySQL | Q7 SQL执行全链路 | ✅ |
+| AI基础 | Prompt/Token/Temperature | ✅ |
+| AI基础 | RAG完整链路（切片/BGE-M3/Milvus入参出参/RRF/rerank） | ✅ |
 | AI基础 | Function Calling + ReAct + 三层防幻觉 + 并行调用 | ✅ |
-| AI基础 | 微调 LoRA/QLoRA | ❌ |
-| 项目 | 项目A架构分层+13个面试追问Q&A（RRF/三层防幻觉/关键词热更新/评估） | ✅ 7/8完成 |
-| 项目 | 项目B直播电商OnCall框架 | ❌ |
+| AI基础 | MCP（Client/Server、和@tool区别、USB-C类比、模型视角） | ✅ |
+| AI基础 | Self-Attention 手算例子（点积/Softmax/加权） | ❌ 讲了一半断在点积 |
 
-### 📌 今天（2026-07-09）目标
-1. 后端MySQL Q7-Q9收尾（SQL执行链路/最左前缀/缓存一致性）
-2. 继续AI基础：Self-Attention + KV Cache（大模型核心原理）
-3. 或深入项目B：Supervisor多Agent协作状态机/HITL实现细节
+## 📌 待继续（按顺序）
+| 分类 | 内容 | 状态 |
+|------|------|------|
+| AI基础 | Self-Attention 续：Softmax加权求和→Multi-Head→KV Cache→MHA/MQA/GQA/RoPE | ⏳ |
+| AI基础 | LoRA/QLoRA 微调原理 | ⏳ |
+| AI基础 | DPO vs RLHF | ⏳ |
+| 后端MySQL | Q8 联合索引/最左前缀 | ⏳ |
+| 后端MySQL | Q9 缓存数据库一致性（旁路缓存/延迟双删） | ⏳ |
+| 后端Redis | Q1-Q3 为什么快/三灾/分布式锁 | ⏳ |
+| 项目 | OnCall Supervisor-Worker+HITL代码级落地细节 | ⏳ |
 
----
-
-## 📖 怎么核对
-
-> 每次开新线程，AI 都会先读 `DAILY_CHECK.md` → `CURRENT_PROGRESS.md` → `LEARNING_LOG.md`，所以永远不会记错进度。
+## 📅 今天（2026-07-23）
+- 先续上 Self-Attention 没讲完的部分（上次断点：点积+注意力加权）
+- 视进度推进 LoRA 或 MySQL Q8
+- 项目主文档已重构成单文件，今天不动代码只学

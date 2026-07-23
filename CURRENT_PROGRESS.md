@@ -1,23 +1,26 @@
 # 📚 当前学习进度
 
-> ⚡ 本文件保持精简（≤80行），每次新会话必读本文件即可接上下文。
-> 久远历史见 `docs/LEARNING_LOG.md`（非必要不读）；知识点见 `docs/resources/` 和 `projects/`。
-
----
+> ⚡ 精简文件（≤80行），每次新会话必读本文件。旧记录归档到 docs/LEARNING_LOG.md。
+> 更新时间：2026-07-23
 
 ## 📅 当前阶段
-- 周期：第 1 周收尾 + 项目包装深入学习
-- 更新时间：2026-07-07
+W1 基础收尾 + 项目包装定稿（已收敛为单个项目：直播电商智能助手）
 
-## ✅ 最近完成（保留最近5项，旧的归档到 LEARNING_LOG）
-1. MySQL Q1 B+Tree / Q2 Redo-Undo / Q3 MVCC（幻读解决）
-2. AI基础：Prompt/Token/Temperature、RAG、Function Calling 全部整理完
-3. 项目A：架构分层过了一遍（端→Go网关→Python Agent→RAG/工具→大模型，Go+Python gRPC架构）
-4. 项目A+B 文档统一调整为Go+Python微服务架构，全部推送GitHub
-5. 工程约定：task-status-report/truncate-long-output/auto-new-session-alert/git-verify-push 四个skill已创建生效；AGENTS.md+CURRENT_PROGRESS.md持久化方案完成
+## ✅ 最近完成（保留最近5项）
+1. 后端 MySQL Q1-Q7 全部学完（含 RC 降级、两阶段提交7步、EXPLAIN全字段、临时表）
+2. AI 基础：Prompt/Token/Temp、RAG全链路（chunk/embedding/Milvus入参出参/RRF/rerank）、Function Calling+ReAct+三层防幻觉+并行调用、MCP（Client/Server/和@tool区别）
+3. **项目收敛为一个**：《直播电商智能助手》——B端OnCall/运营取数 + C端智能客服 共享底座，9大亮点+8道面试Q&A，归档旧A/B/unified文档
+4. 工程约定：task-status-report/truncate-long-output/auto-new-session-alert/git-verify-push 四个skill生效
+5. Self-Attention 手算例子讲到点积，被上下文超限打断，待续
 
-## 🚀 下一个任务
-- 今天（7/7）：
-  1. 项目A深挖：8个核心亮点+9个面试Q&A，逐个搞懂技术细节（重点：混合检索、多级缓存、防幻觉、个性化回答、运营取数、竞拍优化）
-  2. 学完项目A → 项目B-1直播电商OnCall助手框架
-- 之后：MySQL Q4 事务隔离级别 + Redis 高频题
+## 🚀 下一个任务（断点续学）
+1. 先续 Self-Attention：Softmax加权求和→Multi-Head→KV Cache→MHA/MQA/GQA/RoPE（AI面试必问核心）
+2. 学完后推进 AI 基础：LoRA/QLoRA、DPO
+3. 后端：MySQL Q8-Q9 收尾 → Redis Q1-Q3
+4. 项目：OnCall Supervisor-Worker+HITL 代码级细节（已有骨架，面试能写出来）
+
+## 📁 关键文件
+- 项目主文档：`projects/直播电商智能助手.md`
+- AI速查：`docs/resources/AI-Agent面试满分速查.md`
+- 后端速查：`docs/resources/后端面试满分速查.md`
+- 旧项目文档（归档，不再维护）：`projects/archive/`
