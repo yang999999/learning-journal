@@ -28,8 +28,8 @@
 | AI基础 | Self-Attention 续：Softmax加权求和→Multi-Head→KV Cache→MHA/MQA/GQA/RoPE | ⏳ |
 | AI基础 | LoRA/QLoRA 微调原理 | ⏳ |
 | AI基础 | DPO vs RLHF | ⏳ |
-| 后端MySQL | Q8 联合索引/最左前缀 | ⏳ |
-| 后端MySQL | Q9 缓存数据库一致性（旁路缓存/延迟双删） | ⏳ |
+| 后端MySQL | Q8 联合索引/最左前缀+B+Tree排序本质+索引失效 | ✅ 7/27 |
+| 后端MySQL | Q9 缓存一致性(Cache Aside/延迟双删/binlog删缓存) | ✅ 7/27 |
 | 后端Redis | Q1-Q3 为什么快/三灾/分布式锁 | ⏳ |
 | 项目 | OnCall Supervisor-Worker+HITL代码级落地细节 | ⏳ |
 
