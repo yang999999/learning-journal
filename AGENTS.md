@@ -20,7 +20,15 @@
 
 旧的project-A/project-B/unified文档已归档到 `projects/archive/`，不再维护。
 
+## 学习教材（主教材=小林两个站）
+- **AI方向**（Agent/RAG/LLM/ClaudeCode）：https://xiaolinnote.com
+- **后端方向**（MySQL/Redis/Go/OS/面经）：https://www.xiaolincoding.com
+- 完整章节映射见 `docs/learning-roadmap-xiaolin.md`
+- 原则：优先系统学习小林图解系列 → 扩展结合业务/AI项目写进速查文档 → 每个技术栈知识点都能映射进《直播电商智能助手》项目
+
 ## 必读（新会话开始按顺序读）
+1. `docs/learning-roadmap-xiaolin.md` — 学习路线图（小林两站章节映射+进度）
+2. `DAILY_CHECK.md` — 每日核对表
 1. `DAILY_CHECK.md` — 每日核对表，**回复用户前先问"今天学到哪里了？进度对不对？"**
 2. `CURRENT_PROGRESS.md` — 当前进度摘要
 3. 知识点/项目按需读 `docs/resources/` 和 `projects/`
