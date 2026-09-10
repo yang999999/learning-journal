@@ -7,10 +7,11 @@
 已切换教材为小林两站（后端=xiaolincoding.com，AI=xiaolinnote.com），项目用《直播电商智能助手》。
 
 ## ✅ 最近完成
-1. 建立学习路线图：docs/learning-roadmap-xiaolin.md（MySQL/Redis/Agent/RAG/LLM/Tools/ClaudeCode/Go/面经 全章节映射+进度）
-2. 后端 MySQL Q1-Q9 + Redis Q1-Q3（索引/事务/MVCC/锁/日志/缓存一致性/三灾/分布式锁）
-3. AI 基础：RAG/FC+ReAct/三层防幻觉/MCP/Self-Attention全家桶
-4. 项目：直播电商智能助手（三类场景+技术栈全覆盖+9亮点）
+1. Golang 面试（小林 /interview/golang.html，逐题对齐）：Slice 底层+扩容+共享数组 / Map hmap+bmap+增量扩容+并发安全 / Channel hchan+发送接收+关闭（已入 Go面试满分速查.md）
+2. 建立学习路线图：docs/learning-roadmap-xiaolin.md（MySQL/Redis/Agent/RAG/LLM/Tools/ClaudeCode/Go/面经 全章节映射+进度，Go已精确到题号锚点）
+3. 后端 MySQL Q1-Q9 + Redis Q1-Q3
+4. AI 基础：RAG/FC+ReAct/三层防幻觉/MCP/Self-Attention全家桶
+5. 项目：直播电商智能助手（三类场景+技术栈全覆盖+9亮点）
 
 ## 🚀 下一个任务（断点续学，按路线图）
 > 顺序按最新指令：**Go 优先 → AI → MySQL/Redis 最后**（后两者最熟）

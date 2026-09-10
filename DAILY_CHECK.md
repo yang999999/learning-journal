@@ -24,7 +24,7 @@
 | LLM | FlashAttention / 量化 / MoE / DPO vs PPO / Tokenizer | ⏳ |
 | Tools | MCP vs Skill / A2A / Skill机制 | ⏳ |
 | ClaudeCode | 主循环 / 上下文压缩 / 记忆 / 多Agent（结合Codex理解） | ⏳ |
-| Golang | Go基础/Channel/Slice/Map/Sync / GMP / 垃圾回收 / 内存管理 | ⏳ |
+| Golang | Slice(2.1-2.4)/Map(3.1,3.5,3.7,3.8)/Channel(4.2-4.6,4.8) 已学；待学：Go基础1.x、Sync5.x、Context6.x、Interface7.x、GMP9.x、内存10.x、GC11.x、代码12.x | 🔶 部分已学 |
 | 面经 | 大厂面经（字节/腾讯优先） | ⏳ |
 
 ## 📅 今天（2026-08-07）

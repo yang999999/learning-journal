@@ -114,16 +114,24 @@
 | CLAUDE.md | /claudecode/playbook/cc_claude_md.html | 对照AGENTS.md |
 | grep/工程 | /claudecode/source/cc_grep.html | - |
 
-## 八、Golang 专题（xiaolincoding /interview/golang.html + os）
-> 用户重点：Go基础、Channel、Slice、Map、Sync、GMP、垃圾回收、内存管理
+## 八、Golang 专题（xiaolincoding /interview/golang.html，逐题对齐）
+> 主页面：https://www.xiaolincoding.com/interview/golang.html（章节锚点链接 = 页面URL#题目id）
+> 进度：1-4 已学（Slice/Map/Channel 进 docs/resources/Go面试满分速查.md）
 
-| 主题 | 链接 | 说明 |
+| 章节 | 题号/锚点 | 状态 |
 |---|---|---|
-| Go基础/Channel/Slice/Map/Sync | /interview/golang.html | ❌ 全部待学 |
-| GMP调度 | /os/4_process/*.html、goroutine 调度 | ❌ 重点补 |
-| 垃圾回收 | GC 相关 | ❌ 重点补 |
-| 内存管理 | /os/3_memory/*.html | 补 |
-| Go并发模型 | Channel/Goroutine | ❌ 重点补 |
+| 1. Go基础面试题 | #_1-1 ~ #_1-22（协程/进程线程/make-new/数组切片/for range地址/defer/rune/struct{}/init/interface比较/nil/逃逸/多返回值/unsafe） | ⏳ 待学 |
+| 2. Slice面试题 | #_2-1 底层结构 / #_2-2 扩容 / #_2-3 截取共享数组 / #_2-4 函数传参 | ✅ 已学 |
+| 3. Map面试题 | #_3-1 底层 / #_3-7 扩容时机 / #_3-8 扩容过程 / #_3-5 并发安全 / #_3-2 遍历无序已学；⏳ #_3-4 顺序读取、#_3-6 key可比较、#_3-9 取地址、#_3-10 删除释放内存、#_3-11 边遍历边删 | 🔶 部分已学 |
+| 4. Channel面试题 | #_4-2 底层 / #_4-3 发送 / #_4-4 接收 / #_4-5 已关闭读取 / #_4-6 内存泄漏 / #_4-8 写已关闭已学；⏳ #_4-1 CSP、#_4-7 关闭异常、#_4-9~#_4-11 select | 🔶 部分已学 |
+| 5. Sync面试题 | #_5-1~#_5-13（原子操作/锁/mutex模式/自旋/Once/WaitGroup/sync.Map底层/read-dirty/nil-expunged） | ⏳ 待学 |
+| 6. Context面试题 | #_6-1~#_6-4 | ⏳ 待学 |
+| 7. Interface面试题 | #_7-1~#_7-5（iface/eface/断言） | ⏳ 待学 |
+| 8. 反射面试题 | #_8-1~#_8-4 | ⏳ 待学 |
+| 9. GMP面试题 | #_9-1~#_9-10（GMP模型/scheduler/调度策略/调度时机/M找G/P的作用/P和M创建/m0/g0/栈切换） | ⏳ 重点 |
+| 10. 内存管理面试题 | #_10-1~#_10-6（内存分配/逃逸/泄漏定位） | ⏳ 重点 |
+| 11. 垃圾回收面试题 | #_11-1~#_11-14（GC/三色/STW/写屏障/流程/触发/调优） | ⏳ 重点 |
+| 12. Go代码面试题 | #_12-1~#_12-9（协程顺序打印/交替打印/并发控制/生产者消费者） | ⏳ 练手 |
 
 ## 九、大厂后端面经（xiaolincoding /backend_interview/）
 > 用户重点：大厂/中厂/手机厂/通信厂/新能源/银行面试题
