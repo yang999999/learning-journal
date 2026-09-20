@@ -850,6 +850,16 @@ d(q,v2) = √(4+9) ≈ 3.61
 - 金句："两段式检索：bi-encoder 粗排求全（ANN 召回 top-100），cross-encoder 精排求准（逐条打分取 top-5）。召回靠向量、排序靠交互，成本可控。"
 - 项目映射（C 端客服）：问"秒杀A和竞拍B哪个划算" → 向量粗排召回 100 条玩法/商品 → cross-encoder 精排 top-5 → 注入 LLM 生成答案。
 
+**④ Cross-Encoder 原理拆解：Transformer 内部到底怎么算（追问）**
+
+- **输入是一条拼接序列，不是两个向量**：`[CLS] q1 q2 q3 [SEP] d1 d2 d3 [SEP]`，query 和 doc 的 token 拼一起，每个 token → embedding + 位置编码，送进同一个 Transformer
+- **"cross"的本质**：拼接后走普通 self-attention（权重 = softmax(Q·Kᵀ/√d)），但 q 和 d 的 token 在**同一条序列**里互相 attend → token 级交互，每层信息跨 q/d 边界流动，L 层后全序列都是"带对方信息的混合表示"。对比 bi-encoder：两个静态向量，相似度=余弦，永远学不会"否定/反义/指代"
+- **面试加分细节**：标准 cross-encoder 是"拼接+self-attention"，不是真正的 cross-attention 层（那是 encoder-decoder 里 decoder 对 encoder 的机制）；"cross"指跨 q/d 边界的交互
+- **[CLS] = 关系压缩包**：每层 attend 全部 token，最后一层 h_CLS 是"q+d 关系"的联合表示（不是 q 向量也不是 d 向量）
+- **打分头**：h_CLS → 线性层 → 1 个标量 logit → sigmoid → 0~1 分；对粗排 top-100 每条跑一次前向 → 排序 → 取 top-5（top-k = 打完分排序后的前几名）
+- **分数怎么学出来**：训练样本 (q, 相关doc, 不相关doc) 或 (q,d,label)，对比/排序损失拉大相关对与不相关对的分数差 → 学"整句话组合后的相关性"
+- **代价根源**：注意力 O((len_q+len_d)²×L) + q+d 无法离线预计算 + 输入限长（一般 ≤512 token）→ 只能精排 top-k，全库跑不起
+
 ### Q6：分层图到底怎么建的？（不是按顺序分层，是随机升层 + 最近邻连边）
 
 **误区纠正**：1D 数字例子（0,5,10,15,20 排好序）只演示"搜索怎么走"，容易误以为层=有序。HNSW 学的**不是跳表的"有序"，而是跳表的"随机升层"**——向量没有顺序，只有距离。
